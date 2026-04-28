@@ -13,12 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: Install and build frontend
+      - name: Install & Build
         run: |
           cd frontend
           npm install
@@ -40,7 +40,7 @@ jobs:
         with:
           name: react-build
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'dhaanya-frontend'
