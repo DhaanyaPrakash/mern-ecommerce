@@ -31,9 +31,10 @@ exports.signup=async(req,res)=>{
         const token=generateToken(secureInfo)
 
         // sending jwt token in the response cookies
+        const cookieExpirationDays = process.env.COOKIE_EXPIRATION_DAYS || 30
         res.cookie('token',token,{
             sameSite:process.env.PRODUCTION==='true'?"None":'Lax',
-            maxAge:parseInt(process.env.COOKIE_EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
+            maxAge:parseInt(cookieExpirationDays) * 24 * 60 * 60 * 1000,
             httpOnly:true,
             secure:process.env.PRODUCTION==='true'?true:false
         })
@@ -61,9 +62,10 @@ exports.login=async(req,res)=>{
             const token=generateToken(secureInfo)
 
             // sending jwt token in the response cookies
+            const cookieExpirationDays = process.env.COOKIE_EXPIRATION_DAYS || 30
             res.cookie('token',token,{
                 sameSite:process.env.PRODUCTION==='true'?"None":'Lax',
-                maxAge:parseInt(process.env.COOKIE_EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
+                maxAge:parseInt(cookieExpirationDays) * 24 * 60 * 60 * 1000,
                 httpOnly:true,
                 secure:process.env.PRODUCTION==='true'?true:false
             })
