@@ -135,7 +135,7 @@ const authSlice=createSlice({
             })
             .addCase(signupAsync.rejected,(state,action)=>{
                 state.signupStatus='rejected'
-                state.signupError=action.error
+                state.signupError=action.payload
             })
 
             .addCase(loginAsync.pending,(state)=>{
@@ -147,7 +147,7 @@ const authSlice=createSlice({
             })
             .addCase(loginAsync.rejected,(state,action)=>{
                 state.loginStatus='rejected'
-                state.loginError=action.error
+                state.loginError=action.payload
             })
 
             .addCase(verifyOtpAsync.pending,(state)=>{
@@ -159,7 +159,7 @@ const authSlice=createSlice({
             })
             .addCase(verifyOtpAsync.rejected,(state,action)=>{
                 state.otpVerificationStatus='rejected'
-                state.otpVerificationError=action.error
+                state.otpVerificationError=action.payload
             })
 
             .addCase(resendOtpAsync.pending,(state)=>{
@@ -171,7 +171,7 @@ const authSlice=createSlice({
             })
             .addCase(resendOtpAsync.rejected,(state,action)=>{
                 state.resendOtpStatus='rejected'
-                state.resendOtpError=action.error
+                state.resendOtpError=action.payload
             })
 
             .addCase(forgotPasswordAsync.pending,(state)=>{
@@ -183,7 +183,7 @@ const authSlice=createSlice({
             })
             .addCase(forgotPasswordAsync.rejected,(state,action)=>{
                 state.forgotPasswordStatus='rejected'
-                state.forgotPasswordError=action.error
+                state.forgotPasswordError=action.payload
             })
 
             .addCase(resetPasswordAsync.pending,(state)=>{
@@ -195,7 +195,7 @@ const authSlice=createSlice({
             })
             .addCase(resetPasswordAsync.rejected,(state,action)=>{
                 state.resetPasswordStatus='rejected'
-                state.resetPasswordError=action.error
+                state.resetPasswordError=action.payload
             })
 
             .addCase(logoutAsync.pending,(state)=>{
@@ -207,7 +207,7 @@ const authSlice=createSlice({
             })
             .addCase(logoutAsync.rejected,(state,action)=>{
                 state.status='rejected'
-                state.errors=action.error
+                state.errors=action.payload
             })
 
             .addCase(checkAuthAsync.pending,(state)=>{
@@ -220,7 +220,7 @@ const authSlice=createSlice({
             })
             .addCase(checkAuthAsync.rejected,(state,action)=>{
                 state.status='rejected'
-                state.errors=action.error
+                state.errors=action.payload
                 state.isAuthChecked=true
             })
             

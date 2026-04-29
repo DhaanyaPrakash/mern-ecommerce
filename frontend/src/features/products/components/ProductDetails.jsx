@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { clearSelectedProduct, fetchProductByIdAsync, resetProductFetchStatus, selectProductFetchStatus, selectSelectedProduct } from '../ProductSlice'
-import { Box,Checkbox,Rating, Stack,Typography, useMediaQuery,Button,Paper} from '@mui/material'
+import { Box,Checkbox,Rating, Stack,Typography, useMediaQuery,Button} from '@mui/material'
 import { addToCartAsync, resetCartItemAddStatus, selectCartItemAddStatus, selectCartItems } from '../../cart/CartSlice'
 import { selectLoggedInUser } from '../../auth/AuthSlice'
 import { fetchReviewsByProductIdAsync,resetReviewFetchStatus,selectReviewFetchStatus,selectReviews,} from '../../review/ReviewSlice'
@@ -80,7 +80,7 @@ export const ProductDetails = () => {
             dispatch(fetchProductByIdAsync(id))
             dispatch(fetchReviewsByProductIdAsync(id))
         }
-    },[id])
+    },[id,dispatch])
 
     useEffect(()=>{
 
@@ -91,7 +91,7 @@ export const ProductDetails = () => {
         else if(cartItemAddStatus==='rejected'){
             toast.error('Error adding product to cart, please try again later')
         }
-    },[cartItemAddStatus])
+    },[cartItemAddStatus,dispatch])
 
     useEffect(()=>{
         if(wishlistItemAddStatus==='fulfilled'){
@@ -121,7 +121,7 @@ export const ProductDetails = () => {
         if(reviewFetchStatus==='rejected'){
             toast.error("Error fetching product reviews, please try again later")
         }
-    },[reviewFetchStatus])
+    },[reviewFetchStatus,dispatch])
 
     useEffect(()=>{
         return ()=>{
@@ -132,7 +132,7 @@ export const ProductDetails = () => {
             dispatch(resetWishlistItemAddStatus())
             dispatch(resetCartItemAddStatus())
         }
-    },[])
+    },[dispatch])
 
     const handleAddToCart=()=>{
         const item={user:loggedInUser._id,product:id,quantity}
