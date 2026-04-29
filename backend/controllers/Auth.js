@@ -130,20 +130,40 @@ exports.resendOtp=async(req,res)=>{
             return res.status(404).json({"message":"User not found"})
         }
 
+        // Validate email configuration before proceeding
+        if(!process.env.EMAIL || !process.env.PASSWORD){
+            return res.status(500).json({message:'Email credentials are not configured on the server'})
+        }
+
         await Otp.deleteMany({user:existingUser._id})
 
         const otp=generateOTP()
         const hashedOtp=await bcrypt.hash(otp,10)
+        
+        // Safely parse OTP_EXPIRATION_TIME with fallback to prevent NaN
+        const otpExpirationMs = parseInt(process.env.OTP_EXPIRATION_TIME, 10) || 120000
+        
+        // Additional safety check to ensure we have a valid number
+        if(isNaN(otpExpirationMs) || otpExpirationMs <= 0){
+            console.error('Invalid OTP_EXPIRATION_TIME configuration, using default 120000ms')
+            otpExpirationMs = 120000
+        }
 
-        const newOtp=new Otp({user:req.body.user,otp:hashedOtp,expiresAt:Date.now()+parseInt(process.env.OTP_EXPIRATION_TIME)})
+        const newOtp=new Otp({user:req.body.user,otp:hashedOtp,expiresAt:Date.now()+otpExpirationMs})
         await newOtp.save()
 
         await sendMail(existingUser.email,`OTP Verification for Your MERN-AUTH-REDUX-TOOLKIT Account`,`Your One-Time Password (OTP) for account verification is: <b>${otp}</b>.</br>Do not share this OTP with anyone for security reasons`)
 
         res.status(201).json({'message':"OTP sent"})
     } catch (error) {
-        res.status(500).json({'message':"Some error occured while resending otp, please try again later"})
         console.log(error);
+        
+        // Provide more specific error message if it's an email-related error
+        if(error.message && error.message.includes('Email credentials')){
+            return res.status(500).json({message:'Email service is not available. Please contact support.'})
+        }
+        
+        res.status(500).json({'message':"Some error occured while resending otp, please try again later"})
     }
 }
 
@@ -158,6 +178,11 @@ exports.forgotPassword=async(req,res)=>{
             return res.status(404).json({message:"Provided email does not exists"})
         }
 
+        // Validate email configuration before proceeding
+        if(!process.env.EMAIL || !process.env.PASSWORD){
+            return res.status(500).json({message:'Email credentials are not configured on the server'})
+        }
+
         await PasswordResetToken.deleteMany({user:isExistingUser._id})
 
         // if user exists , generates a password reset token
@@ -166,8 +191,17 @@ exports.forgotPassword=async(req,res)=>{
         // hashes the token
         const hashedToken=await bcrypt.hash(passwordResetToken,10)
 
+        // Safely parse OTP_EXPIRATION_TIME with fallback to prevent NaN
+        const otpExpirationMs = parseInt(process.env.OTP_EXPIRATION_TIME, 10) || 120000
+        
+        // Additional safety check to ensure we have a valid number
+        if(isNaN(otpExpirationMs) || otpExpirationMs <= 0){
+            console.error('Invalid OTP_EXPIRATION_TIME configuration, using default 120000ms')
+            otpExpirationMs = 120000
+        }
+
         // saves hashed token in passwordResetToken collection
-        newToken=new PasswordResetToken({user:isExistingUser._id,token:hashedToken,expiresAt:Date.now() + parseInt(process.env.OTP_EXPIRATION_TIME)})
+        newToken=new PasswordResetToken({user:isExistingUser._id,token:hashedToken,expiresAt:Date.now() + otpExpirationMs})
         await newToken.save()
 
         // sends the password reset link to the user's mail
@@ -186,6 +220,12 @@ exports.forgotPassword=async(req,res)=>{
 
     } catch (error) {
         console.log(error);
+        
+        // Provide more specific error message if it's an email-related error
+        if(error.message && error.message.includes('Email credentials')){
+            return res.status(500).json({message:'Email service is not available. Please contact support.'})
+        }
+        
         res.status(500).json({message:'Error occured while sending password reset mail'})
     }
 }
